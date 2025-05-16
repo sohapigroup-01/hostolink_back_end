@@ -1,0 +1,23 @@
+Take the next step and unleash the full power of Twilio 🚀
+Upgrading your Twilio account unlocks higher usage limits, access to phone numbers across the world, paid features, and improved scalability.
+
+Upgrade
+Account Info
+Account SID
+ACb1e5fcfb6f2a0ccf8b3e782637d62c22
+
+Auth Token
+e8a23c8c6b21b7a12bea5f46c45ecfe4
+
+
+Hide
+Always store your token securely to protect your account. Learn more
+
+My Twilio phone number
++19786338417
+
+You are in a trial account and can only send messages and make calls to verified phone numbers. Learn more about your trial account
+
+Go to account settings
+API Keys
+Go to API Keys

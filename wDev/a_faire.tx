@@ -1,0 +1,39 @@
+
+
+-dossier_hostolink_preset
+- créer un dossier avec les données  d'un user (simple ou es ) sur clouniray et inserer ces photo renommé
+- endpoint qui permet a l'user lui même de changer son mdp
+- verifier que l'utilisateur a compte verif a true avant de continuer a se connecter
+- revoir endpoint d'envoi d'email et sms
+- lors de l'uploader de la photo de admin un dossier upload se creer en locale avec des fichiers lisible si on complète avec l'exetension
+- trouver un moyen d'exporter la bd en ligne
+- comparer a celui du locale et ajuster
+- trouver un moyen pour modifier les tables ainsi qu'en locale qu'en ligne 
+- changer le nom du dossier upload en config_coudinary 
+- quand l'otp est utiliser ne plus pouvois l'utiliser 
+
+
+
+
+         un agent ne peut avoir 100 000 000 (cumulé somme numérique 50 000 000 + somme physique 50 000 000)
+         quand un utilisateur ou un e.s fait un retrait on le debit et ou ajout son argent debit numerique au solde _de rechargent de l'agent administrateur  (donc solde numerique admin diminue , solde physique augmente - solde numerique utilisateur augmente et son argent physique diminue)
+         quand un utilisateur ou un e.s fait un depot on debit le solde de l'administrateur pour ajouter a celui de l'utilisateur (donc solde numerique admin augment , solde physique diminue - solde numerique utilisateur diminue et son argent physique augment)
+
+             - à faire faire la verification de plafond de cumule pour l'utilisateur 
+             - gerer le cas de frais lors du dépôt
+             - revoir la question de solde de cumule car après que le cumule arrive a 50M (au lieu de 100M il ne peut plus faire d'action en meme temps sa souleve un sujet interresant comment on le decharge faut il qu'il se rend a la banque pour deposer ce argent cumuler ou comment faire)
+             - dans la table admin_rechargements cible et identifient sont pareil donc garder un 
+             - mettre le solde encien et nouveau de l'admin lors de la trancatcion 
+             - modernisé le mode (rechargement par uuid id ou identifient ou depot )
+             - le super admin qui recharge les amdins ou donnes les autorisation doit avoir une verification vraiment stricte
+             - tous les endpoints doivent etre tokennisé
+             - quand on bani un utilisateur desactiver son compte
+             - lors de l'inscript de e.s on  recupere bien les coodonées gps mais pas le geo (n'est pas calculé)
+             - supprimer code_invitation_utilise dans utilisateur
+             - etant données que le token du qrcode s'expire pour ne pas enbete les users à rescanner a chaque fois , une fois scanner on  recuper les infos comme le retour de http://localhost:3000/qr-codes/valider_qr_code 
+             - endpoint qui permet a l'etablissement de santé de payer un utilisateur 
+             - endpoint qui permet a l'etablissement de santé de payer un e.s 
+             - quand un e.s demande un otp le temps de d'aatendre avant de redemander n'est pas renouveler ou trop long que 1 min 
+
+
+             dans historique de transaction il faudrais songer a repectorier les données du beneficiaire ou expediteur
