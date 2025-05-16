@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "hostolink-2b120",
+  "private_key_id": "2dff61cbcc3b1b6d98573a463e0af8f4b0e0836a",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC3jez0zmFowU3a\nfTa6ZzokmLynkvBecvqG8lRBLZTI06+idGJVuZLOh73JN/kTjvcLy7yQcVYcPgX2\nWgFPc5lFusdzPREQ7AvwWOotYHq2iq9C9YStF3Myn9tbwWvwYZe8sUBKjWGE+gyO\nZ5cFqzXgL6oSJmWoGGAnr21roM1Df6wGSLmjGL65N0xS6/CEmrRj5L57PYwVGgKl\nWdEYmpXP8eDh9r7CC9hJKVxr9HFKjWUvphrkWsSq1dyJRNY2Gw0/28HR8DraWwwJ\nAy9HxsRdHBy59q1HWDH6mBRN1pVK3+okYR56dRPDOejDqciG+DIN1BmQPmfJCvLQ\nXo6SoBJfAgMBAAECggEAGwEPTl4afe3fxU13Qr8zEkqXiVPDIdy/4iCT/Vl2XSv/\ngo1QIOqB9aPfa6iyGora6j+usyq+uhL0j5oNkqHKzTO9v290K6LT3X1HSSZmMfrU\nmVZDjwTh1sh73ijmTLbJkGIct5sghg6/etKJ/l8s4u7q52wCDVPguZXufs9pGLfX\nixXaT5Mr7UwBPLkuhuRcYrlGyaVFQzmP0uzjTj6nySYtgMqxnoLQcoUzVwtwEtqF\nnGVXT5RodnE6VnRvv0o1mlbBXMOi8yNQERZa+U8RmwuAowPf8fHqt0KTcslTRO43\nRGLUkkx/2H6bk99CEqAQJwmos5mqfrlsvDDuPApoiQKBgQDlU+FAs/0PYjqJu3ua\nLSLrfZy7fGZSuMb66ZiMlQTsx7ASoz/28pqCczADRQhjyK5Mfncj8Lr6VWFZ0wxu\nFZQyM0eHqSkm6JLVwnuuptyxiqsk+JVoerzqxuOFzRzC4Bbv1NBEOtyPnZKPEKpb\nSMf5NbO+JYriTYNgcNSZaLp2bQKBgQDM5ytHVVzR5/pG0yscbllwHkB3Y+BOnXx3\ngsY+i5YjLIuDRf4hh+/jrGvpml1fAOwDwQt23qNoudPl48nga89hGgEobUWBdRbw\nvpDh4K5O/Atj9xtA8foX6wR3a4aw9uJR/oK16e4dOZ4Amz9YqOmi9XG1b9w0W4mI\ngZq6FCJcewKBgCxrQNgdhMi0CA6hh+FnGLpwTClsgQ1IyRHUqT2hp6CNVSdnA367\nov3dfdFET8m0Fz6tyDnn6O+QFhkl7eRsvZWzpQk71MK6jaZl0zsTCvBAocG5fIcO\nLwVynKNQBWAhs4+ksupkVFBk/vxDCBxCTqmQo04TS4Fl7iqB8Ev+ow9JAoGAF7L1\nEn8RCUYncGGkLtmkho85LZXjr7QPXVNG0p0adF8Gk9xYlFBAsriSkqZD/mUA5z5A\nsTL2+3nixEggZVCS38w+LgrVay+7w4SHBVkTUBdeyeUexdg28OVB0v4gyf8EFi+1\ntoyj+cVcPP23ye1feHWi/TU+5t9ffOZgmv0RLFkCgYBGgZOxOPpHI9IllQGPkZTL\nojJz26QReKV/fk1fbNDSwq0Pp0z0YxOUWX3LRMXO3Uv0NjxV1TLScacZIEsls/23\nL2ODaaCtyYSDaXj6B4UdebQfDGizpH4VCgpGm13ntsqzm4XGBzgN7YtGJsK7/ok4\nxPlba9tN45lkiIEDxse3NQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "hostolink-sms@hostolink-2b120.iam.gserviceaccount.com",
+  "client_id": "116940269984986128147",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/hostolink-sms%40hostolink-2b120.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
