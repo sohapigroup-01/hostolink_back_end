@@ -31,9 +31,6 @@ export class TransactionInterneController {
     };
   }
   
-
-
-  
   @Get(':id')
   @UseGuards(JwtAdminGuard)
   async getTransactionById(@Param('id') id: string, @Req() req) {

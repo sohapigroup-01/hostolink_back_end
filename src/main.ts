@@ -42,8 +42,8 @@ async function bootstrap() {
     const PORT = process.env.PORT || 3000;
     await app.listen(PORT, '0.0.0.0');
 
-    //console.log(`🚀 Le serveur tourne sur : http://localhost:${PORT}`);
-    //console.log('📦 Connexion à PostgreSQL :', process.env.DATABASE_NAME);
+    console.log(`🚀 Le serveur tourne sur : http://localhost:${PORT}`);
+    console.log('📦 Connexion à PostgreSQL :', process.env.DATABASE_NAME);
   } catch (error) {
     console.error('❌ Erreur lors du démarrage de l’application :', error);
     process.exit(1);

@@ -18,6 +18,7 @@ import toStream from 'buffer-to-stream';
 
 // Dans user-etablissement-sante.service.ts
 import { Image, ImageMotifEnum } from '../image/entities/image.entity'; 
+import { EmailService } from 'src/utilisateur/email.service';
 
 @Injectable()
 export class UserEtablissementSanteService {
@@ -59,6 +60,9 @@ isTokenRevoked(token: string): boolean {
     
     @InjectRepository(Image)
     private readonly imageRepo: Repository<Image>,
+
+      private readonly emailService: EmailService, // 👈 AJOUT
+
   ) {}
 
   async register(data: CreateUserEtablissementDto) {
@@ -82,7 +86,7 @@ isTokenRevoked(token: string): boolean {
     };
   }
 
-  async generateOtp(user: UserEtablissementSante) {
+async generateOtp(user: UserEtablissementSante) {
     const now = new Date();
 
     // 1. Vérifier dernière demande OTP
@@ -112,6 +116,8 @@ isTokenRevoked(token: string): boolean {
     });
 
     await this.otpRepo.save(otp);
+    await this.emailService.sendOtpEmail(user.email, otpCode);
+
     //console.log(otp)
   }
 
@@ -136,6 +142,8 @@ isTokenRevoked(token: string): boolean {
   
     otp.is_valid = false;
     await this.otpRepo.save(otp);
+    await this.emailService.sendOtpEmail(user.email, otp.otp_code);
+
   
     // 🔁 Étape 1 – Créer le compte s’il n’existe pas
     await this.createOrEnsureCompte(user.id_user_etablissement_sante);
@@ -333,6 +341,8 @@ async getProfile(id: number) {
   
     otp.is_valid = false;
     await this.otpRepo.save(otp);
+    await this.emailService.sendOtpEmail(user.email, otp.otp_code);
+
   
     user.mot_de_passe = await bcrypt.hash(dto.nouveau_mot_de_passe, 10);
     await this.userRepo.save(user);
@@ -358,6 +368,8 @@ async getProfile(id: number) {
   
     otp.is_valid = false;
     await this.otpRepo.save(otp);
+    await this.emailService.sendOtpEmail(user.email, otp.otp_code);
+
   
     // Enregistrer la raison
     const raison = this.raisonRepo.create({

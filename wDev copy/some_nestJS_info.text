@@ -1,0 +1,222 @@
+
+AppModule:
+
+// // ---------------------LOCAL ---------------------
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+
+// ✅ Utilisateurs & Authentification
+import { UserModule } from './utilisateur/user.module';
+import { AuthModule } from './auth/auth.module';
+
+// ✅ OTP & Notifications
+
+// ✅ Images & Établissements de Santé
+import { ImageModule } from './image/image.module';
+import { ListeNumeroEtablissementSanteModule } from './liste_etablissement/liste_numero_etablissement_sante.module';
+import { CloudinaryModule } from './upload/cloudinary.module';
+import { AdministrateurModule } from './administrateur/administrateur.module';
+import { AnnonceModule } from './annonce/annonce.module';
+
+import { ThematiqueDiscussionModule } from './thematique_discussion/thematique_discussion.module';
+import { FirebaseModule } from './thematique_discussion/firebase/firebase.module';
+
+
+// ✅ transaction interne
+import { TransactionInterneModule } from './transaction-interne/transaction-interne.module';
+import { TransactionFraisModule } from './transaction-frais/transaction-frais.module';
+import { UserEtablissementSante } from './user_etablissement_sante/entities/user-etablissement-sante.entity';
+import { UserEtablissementSanteModule } from './user_etablissement_sante/user-etablissement-sante.module';
+import { QrDynamiqueModule } from './qr-dynamique_user_es/qr-dynamique.module';
+import { PaiementModule } from './paiement_user_a_es/paiement.module';
+import { ExpertSanteModule } from './user_etablissement_sante/expert-sante.module';
+import { GestionUtilisateurModule } from './administrateur/Gest_utilisateurs/gestion_utilisateur.module';
+import { EtablissementSanteModule } from './localisation_etablissement_sante/etablissement_sante.module';
+import { InvitationModule } from './invitations/invitation.module';
+
+// ✅ Message assistant client
+import { AgentAssistantModule } from './agent-assistant/agent-assistant.module';
+import { QuestionsPredefiniesModule } from './Discussion_agent_client/questions_predefinies/questions_predefinies.module';
+import { MessagesAssistantClientImageModule } from './Discussion_agent_client/messages_assistant_client_image/messages_assistant_client_image.module';
+import { MessageAssistantClientModule } from './Discussion_agent_client/message_assistant_client/message_assistant_client.module';
+import { ConversationsModule } from './Discussion_agent_client/conversations/conversations.module';
+
+@Module({
+  
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      
+      host: process.env.DATABASE_HOST || 'localhost',
+      port: Number(process.env.DATABASE_PORT) || 5432,
+      username: process.env.DATABASE_USER || 'postgres',
+      password: process.env.DATABASE_PASSWORD || 'mdp_dev_sohapigroup',
+      database: process.env.DATABASE_NAME || 'hostolink_bd',
+      autoLoadEntities: true,
+      synchronize: false, 
+      logging:false,
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+  }),
+  UserModule, 
+  AuthModule, 
+  ImageModule, 
+
+  AdministrateurModule,
+  GestionUtilisateurModule,
+  InvitationModule,
+
+  ListeNumeroEtablissementSanteModule,
+  CloudinaryModule,
+  AnnonceModule,
+
+  ThematiqueDiscussionModule,
+  FirebaseModule,
+  TransactionFraisModule,
+
+  TransactionInterneModule,
+  EtablissementSanteModule, 
+  UserEtablissementSante,
+
+  UserEtablissementSanteModule,
+  QrDynamiqueModule,
+  PaiementModule,
+
+  AdministrateurModule,
+  PaiementModule,
+  ExpertSanteModule,
+
+  AgentAssistantModule,
+  QuestionsPredefiniesModule,
+  MessagesAssistantClientImageModule,
+  MessageAssistantClientModule,
+  ConversationsModule,
+  QuestionsPredefiniesModule,
+  
+
+  ],
+
+})
+export class AppModule {}
+console.log('📌 Connexion à PostgreSQL avec URL :', process.env.DB_HOST);
+
+
+
+MAIN.TS :
+
+// ------------LOCAL -----------------
+
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
+import { json, urlencoded } from 'express';  
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+
+
+async function bootstrap() {
+  try {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,  
+      forbidNonWhitelisted: true,  
+      transform: true,  
+    }),
+  );
+
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN || '*',  
+    methods: ['GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
+  if (process.env.SERVE_STATIC === 'true') {
+    app.useStaticAssets(join(__dirname, '..', 'public'));
+  }
+
+  app.use(json());  
+  app.use(urlencoded({ extended: true })); 
+
+  app.enableCors({
+    origin: '*', 
+    methods: ['GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'DELETE'], 
+    allowedHeaders: ['Content-Type', 'Authorization'], 
+  });
+
+  const PORT = process.env.PORT || 3000;
+  await app.listen(PORT, '0.0.0.0');
+
+  console.log(`le server tourne bien sur le porte 🚀: http://localhost:${PORT}`);
+  console.log('📌 Connexion à PostgreSQL avec URL :', process.env.DATABASE_NAME);
+
+}catch (error) {
+    console.error('❌ erreur lors du demarrage de l application', error);
+    process.exit(1);
+  }
+}
+bootstrap();
+
+
+
+.env :
+
+# --------LOCAL-----------
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USER=postgres
+DATABASE_PASSWORD=mdp_dev_sohapigroup
+DATABASE_NAME=hostolink_bd
+
+
+# ---------En ligne
+# DB_HOST=aws-0-eu-west-3.pooler.supabase.com
+# DB_PORT=5432
+# DB_NAME=postgres
+# DB_USER=postgres.skwupmsitzsxukbmnkwv
+# DB_PASSWORD=6640ywfeiQqiBMM5
+# DB_SSL=true
+
+# DATABASE_HOST=aws-0-eu-west-3.pooler.supabase.com
+# DATABASE_PORT=5432
+# DATABASE_NAME=postgres
+# DATABASE_USER=postgres.skwupmsitzsxukbmnkwv
+# DATABASE_PASSWORD=6640ywfeiQqiBMM5
+# DB_SSL=true
+
+
+
+# Configuration de Cloudinary
+CLOUDINARY_CLOUD_NAME=dhrrk7vsd
+CLOUDINARY_API_KEY=197881586145143
+CLOUDINARY_API_SECRET=HEEz2vCv7MyxBRjCZScbXeUKgEw
+
+# Clé secrète pour JWT
+JWT_SECRET=MY_SECRET_KEY 
+
+
+# config email
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=sohapigroupcommunication@gmail.com
+SMTP_PASSWORD=ljwi jest pcay slpw
+SMTP_FROM=noreply@sohapigroup.com
+
+# Clés API Vonage
+VONAGE_API_KEY=607d95e2
+VONAGE_API_SECRET=2yxhopCqAC9LSxYE
+VONAGE_SMS_SENDER=Vonage
+
+FIREBASE_CREDENTIAL_PATH=src\config1\hostolink-sante-firebase-adminsdk-fbsvc-10c3095eb0.json
+
+# QR_STATIC_SECRET=your_static_qr_secret_key
+# QR_DYNAMIC_SECRET=your_dynamic_qr_secret_key
+
+; NODE_ENV=development

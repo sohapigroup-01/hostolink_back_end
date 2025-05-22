@@ -91,6 +91,17 @@ export class UserEtablissementSanteController {
   }
   
 
+  @UseGuards(JwtEtablissementAuthGuard)
+  @UseInterceptors(FileInterceptor('image_profil'))
+  @Post('upload-avatar')
+  async uploadAvatarAuthenticated(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: any,
+  ) {
+    const id = req.user.id_user_etablissement_sante;
+    if (!file) throw new BadRequestException('Aucun fichier envoyé');
+    return this.userEtablissementSanteService.uploadOrUpdateAvatar(id, file);
+  }
 
 
 

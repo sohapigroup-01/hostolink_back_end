@@ -25,7 +25,11 @@ export class SmsService {
 
     try {
       await this.client.messages.create({
-        body: `🔐 Votre code Hostolink : ${otpCode} (valide 5 min)`,
+        body: `Akwaba, Voici le code de vérification que vous avez demandé
+        
+      ${otpCode}. 
+        
+      Merci de ne pas le partager. Ce code est valable 5 Min après reception.`,
         from: fromNumber,
         to: phoneNumber,
       });

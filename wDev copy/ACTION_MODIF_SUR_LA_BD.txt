@@ -1,0 +1,334 @@
+----------- faire en priorité ---------
+ALTER TABLE transaction_interne RENAME COLUMN "montant_reçu" TO montant_recu;
+
+------------- SOME -----------
+
+--Ajouter la colonne short_id à la table des QR codes dynamiques
+    ALTER TABLE qr_code_paiement_dynamique 
+    ADD COLUMN short_id CHARACTER VARYING(16);
+
+-- Ajouter la colonne short_id à la table des QR codes statiques
+    ALTER TABLE qr_code_paiement_statique 
+    ADD COLUMN short_id CHARACTER VARYING(16);
+
+-- Créer un index pour rechercher rapidement par short_id
+    CREATE INDEX idx_dynamic_short_id ON qr_code_paiement_dynamique(short_id);
+    CREATE INDEX idx_static_short_id ON qr_code_paiement_statique(short_id);
+
+-- ajout de la colonne "motif_annulation" dans la table "transaction_interne"  cette colonne est la uniquement pour distingué les remboursement fait par les administrateurs
+    ALTER TABLE transaction_interne 
+    ADD COLUMN motif_annulation CHARACTER VARYING(50);
+
+-- modification du type de la colonne "montant_frais" dans la table "transactions_frais" 
+    ALTER TABLE transactions_frais 
+    ALTER COLUMN montant_frais TYPE DECIMAL(10,2);
+
+-- suppression de la table `transaction_interne` 
+    DROP TABLE transaction_interne;
+
+
+-- Création de la table `transaction_interne` mise à jour avec les ajustements nécessaires
+    CREATE TABLE public.transaction_interne (
+        id_transaction SERIAL PRIMARY KEY,
+        id_compte_expediteur INTEGER NOT NULL,
+        id_utilisateur_envoyeur UUID,
+        id_utilisateur_recepteur UUID,
+        id_etablissement_recepteur INTEGER,
+        id_etablissement_envoyeur INTEGER,
+        montant_envoyer NUMERIC(15, 2) NOT NULL,
+        montant_recu NUMERIC(15, 2) NOT NULL,
+        frais_preleve NUMERIC(15, 2),
+        motif_annulation VARCHAR(255),
+        statut VARCHAR(50), 
+        devise_transaction VARCHAR(10),
+        type_transaction VARCHAR(100),
+        date_transaction TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        id_qrcode_dynamique INTEGER,
+        id_qrcode_statique INTEGER,
+        id_compte_recepteur INTEGER NOT NULL,
+        FOREIGN KEY (id_compte_expediteur) REFERENCES compte(id_compte),
+        FOREIGN KEY (id_utilisateur_recepteur) REFERENCES utilisateur(id_user),
+        FOREIGN KEY (id_utilisateur_envoyeur) REFERENCES utilisateur(id_user),
+        FOREIGN KEY (id_etablissement_recepteur) REFERENCES user_etablissement_sante(id_user_etablissement_sante),
+        FOREIGN KEY (id_etablissement_envoyeur) REFERENCES user_etablissement_sante(id_user_etablissement_sante),
+        FOREIGN KEY (id_qrcode_dynamique) REFERENCES qr_code_paiement_dynamique(id_qrcode),
+        FOREIGN KEY (id_qrcode_statique) REFERENCES qr_code_paiement_statique(id_qrcode),
+        CONSTRAINT transaction_interne_check CHECK (id_utilisateur_recepteur IS NOT NULL OR id_etablissement_recepteur IS NOT NULL)
+    );
+
+-------- SANGARE ------------
+
+--changer type de la date annonce
+    ALTER TABLE annonce
+    ALTER COLUMN date SET DEFAULT CURRENT_DATE;
+
+-- ajout du champs du code d'invitation dan sla table utilisateur
+    ALTER TABLE utilisateur
+    ADD COLUMN code_invitation_utilise VARCHAR(100);
+
+-- creation des tables neccesaire pour l'invitation
+    CREATE TABLE invitation (
+        id_invitation SERIAL PRIMARY KEY,
+        id_user UUID NOT NULL,
+        code_invitation VARCHAR(100) UNIQUE NOT NULL,
+        nombre_partages INTEGER DEFAULT 0,
+        nombre_clicks INTEGER DEFAULT 0,
+        nombre_inscriptions INTEGER DEFAULT 0,
+        date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT fk_invitation_user FOREIGN KEY (id_user) REFERENCES utilisateur(id_user) ON DELETE CASCADE
+    );
+
+    CREATE TABLE invitation_tracking (
+        id_tracking SERIAL PRIMARY KEY,
+        code_invitation VARCHAR(100) NOT NULL,
+        ip_visiteur VARCHAR(100),
+        user_agent TEXT,
+        date_click TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT fk_tracking_invitation FOREIGN KEY (code_invitation) REFERENCES invitation(code_invitation) ON DELETE CASCADE
+    );
+ //j ai ajouter cet champ a la table utilisateur
+ ALTER TABLE utilisateur ADD COLUMN id_parrain uuid;
+
+ // j ai ajoute ceux ci a la table message_themamtique
+
+ ALTER TABLE messages_thematique
+ ADD COLUMN id_expert INTEGER REFERENCES expert_sante(id_expert) ON DELETE SET NULL;
+
+
+
+
+
+*-------------- NGUESSAN---- 
+
+--suppression de table unitile
+    DROP table qr_code_paiement_statique;
+    DROP table cartes_qr_code_dynamique ;
+
+-- table expert et lier a l'es
+    CREATE TABLE expert_sante (
+        id_expert SERIAL PRIMARY KEY,
+        id_user_etablissement_sante INTEGER NOT NULL,
+        nom VARCHAR(100),
+        prenom VARCHAR(100),
+        domaine_expertise VARCHAR(255),
+        identifiant CHAR(6) UNIQUE NOT NULL,
+        mot_de_passe TEXT NOT NULL,
+        url_profile TEXT,
+
+        CONSTRAINT fk_expert_user_etablissement_sante
+            FOREIGN KEY (id_user_etablissement_sante)
+            REFERENCES user_etablissement_sante(id_user_etablissement_sante)
+            ON DELETE CASCADE
+    );
+
+
+--la table code_verif_otp
+  DROP TYPE IF EXISTS moyen_envoi_enum CASCADE;
+    
+-- ajouter le champs moyen_envoyer
+  ALTER TABLE code_verif_otp ADD COLUMN moyen_envoyer VARCHAR;
+
+
+-- ajout de la table raison_suppression_compte
+  DROP TABLE IF EXISTS raison_suppression_compte CASCADE;
+  CREATE TABLE raison_suppression_compte (
+    id SERIAL PRIMARY KEY,
+    raison TEXT NOT NULL,
+    date_suppression TIMESTAMP DEFAULT now(),
+    id_user_etablissement_sante INTEGER,
+    CONSTRAINT fk_etab FOREIGN KEY (id_user_etablissement_sante) REFERENCES user_etablissement_sante(id_user_etablissement_sante) ON DELETE CASCADE
+  );
+
+
+-- 1. Supprimer l'ancienne contrainte avec ON DELETE CASCADE
+  ALTER TABLE raison_suppression_compte DROP CONSTRAINT fk_etab;
+
+-- 2. Recréer la contrainte SANS ON DELETE CASCADE
+  ALTER TABLE raison_suppression_compte
+  ADD CONSTRAINT fk_etab
+  FOREIGN KEY (id_user_etablissement_sante)
+  REFERENCES user_etablissement_sante(id_user_etablissement_sante);
+
+-- supprimer la contrainte sur transaction interne
+  ALTER TABLE transaction_interne
+  DROP CONSTRAINT fk_transaction_interne_transactions_frais;
+
+--ajout de la colonne de verif (A DEVELOPPER)
+  ALTER TABLE user_etablissement_sante
+  ADD COLUMN compte_verifie BOOLEAN DEFAULT true;
+
+  UPDATE user_etablissement_sante
+  SET compte_verifie = true
+  WHERE id_user_etablissement_sante != 0;
+
+-- supperssion de la contrainte de l'enum de type de transaction
+  ALTER TABLE transaction_interne
+  DROP CONSTRAINT transaction_interne_type_transaction_check;
+
+------------- SAMEDI 12 AVRIL 2025 -----------------
+
+-- table de recharger un compte par un admin 
+    CREATE TABLE IF NOT EXISTS admin_rechargements (
+        id_rechargement SERIAL PRIMARY KEY,
+        id_admin INTEGER NOT NULL,
+        cible_type VARCHAR(20) NOT NULL CHECK (cible_type IN ('user', 'etablissement')),
+        cible_id INTEGER NOT NULL,
+        identifiant TEXT NOT NULL,
+        montant INTEGER NOT NULL,
+        nouveau_solde INTEGER NOT NULL,
+        ancien_solde INTEGER NOT NULL,
+        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        mode VARCHAR(20) DEFAULT 'manuel'
+    );
+
+
+    ALTER TABLE admin_rechargements
+    ADD CONSTRAINT fk_admin FOREIGN KEY (id_admin) REFERENCES administrateurs(id_admin_gestionnaire) ON DELETE CASCADE;
+
+
+    ALTER TABLE admin_rechargements
+    ALTER COLUMN cible_id TYPE TEXT;
+
+
+---------------- ENCIENNE TABLE ------------------
+hostolink_bd=# \d transaction_interne
+                                                         Table ½ public.transaction_interne ╗
+           Colonne           |            Type             | Collationnement | NULL-able |                         Par dÚfaut
+-----------------------------+-----------------------------+-----------------+-----------+-------------------------------------------------------------
+ id_transaction              | integer                     |                 | not null  | nextval('transaction_interne_id_transaction_seq'::regclass)
+ id_compte_expediteur        | integer                     |                 | not null  |
+ id_utilisateur_recepteur    | integer                     |                 |           |
+ id_etablissement_recepteur  | integer                     |                 |           |
+ montant                     | numeric(15,2)               |                 | not null  |
+ frais_transaction           | numeric(10,2)               |                 |           | 0.00
+ statut                      | character varying(20)       |                 |           | 'en attente'::character varying
+ devise_transaction          | character varying(10)       |                 | not null  |
+ type_transaction            | character varying(100)      |                 |           |
+ date_transaction            | timestamp without time zone |                 |           | CURRENT_TIMESTAMP
+ id_qrcode                   | integer                     |                 |           |
+ id_compte_recepteur         | integer                     |                 | not null  |
+ id_user_etablissement_sante | integer                     |                 |           |
+ motif_annulation            | character varying(50)       |                 |           |
+Index :
+    "transaction_interne_pkey" PRIMARY KEY, btree (id_transaction)
+Contraintes de vÚrification :
+    "transaction_interne_check" CHECK (id_utilisateur_recepteur IS NOT NULL OR id_etablissement_recepteur IS NOT NULL)
+Contraintes de clÚs ÚtrangÞres :
+    "fk_transaction_interne_user_etablissement_sante" FOREIGN KEY (id_user_etablissement_sante) REFERENCES user_etablissement_sante(id_user_etablissement_sante) ON DELETE CASCADE
+
+
+
+
+
+
+
+
+------------------------------------ 17 Avril 2025 ajout des champs dans la table administrateurs pour le refferencement --------------*
+------------- 17 Avril 2025 ajout des champs dans la table administrateurs pour le refferencement --------------*
+    ALTER TABLE administrateurs
+    ADD COLUMN nom VARCHAR(100),
+    ADD COLUMN prenom VARCHAR(100),
+    ADD COLUMN adresse TEXT,
+    ADD COLUMN solde_de_rechargement BIGINT DEFAULT 0,
+    ADD COLUMN cumule_des_transactions BIGINT DEFAULT 0;
+
+
+--------------- 20 avril --------------
+    suppression de la foreign key dans raison de suppresion de compte par raison 
+    ALTER TABLE raison_suppression_compte DROP CONSTRAINT fk_etab;
+
+
+--------------- 24 avril --------------
+
+CREATE TABLE public.questions_predefinies (
+  question_id SERIAL PRIMARY KEY,
+  question_text TEXT NOT NULL,
+  assistant_id INTEGER NOT NULL,
+  category VARCHAR(255),
+  is_active BOOLEAN DEFAULT TRUE,
+  CONSTRAINT questions_predefinies_assistant_id_fkey
+    FOREIGN KEY (assistant_id) REFERENCES agent_assistance(id_agent_assistance)
+);
+
+CREATE TABLE public.conversations (
+  conversation_id SERIAL PRIMARY KEY,
+  user_id UUID,
+  id_etablissement_sante INTEGER,
+  assistant_id INTEGER NOT NULL,
+  start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  status VARCHAR(50) DEFAULT 'active',
+  CONSTRAINT conversations_user_id_fkey
+    FOREIGN KEY (user_id) REFERENCES utilisateur(id_user),
+  CONSTRAINT conversations_id_etablissement_sante_fkey
+    FOREIGN KEY (id_etablissement_sante) REFERENCES user_etablissement_sante(id_user_etablissement_sante),
+  CONSTRAINT conversations_assistant_id_fkey
+    FOREIGN KEY (assistant_id) REFERENCES agent_assistance(id_agent_assistance)
+);
+
+CREATE TABLE public.messages_assistant_client(
+  message_id SERIAL PRIMARY KEY,
+  conversation_id INTEGER NOT NULL,  
+  envoyer_par VARCHAR(50) NOT NULL,
+  message_text TEXT,
+  sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  question_predefinie BOOLEAN DEFAULT FALSE,
+  question_sugerer INTEGER,
+  has_file BOOLEAN DEFAULT FALSE,
+  CONSTRAINT messages_assistant_client_conversation_id_fkey
+    FOREIGN KEY (conversation_id) REFERENCES conversations(conversation_id),
+  CONSTRAINT messages_assistant_client_question_sugerer_fkey
+    FOREIGN KEY (question_sugerer) REFERENCES questions_predefinies(question_id)
+);
+
+CREATE TABLE public.messages_assistant_client_image (
+  image_id SERIAL PRIMARY KEY,
+  message_id INTEGER NOT NULL,
+  image_url TEXT NOT NULL,
+  alt_text TEXT,
+  uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT messages_assistant_client_image_message_id_fkey
+    FOREIGN KEY (message_id) REFERENCES messages_assistant_client(message_id)
+);
+
+
+--------------- 25 avril --------------
+ALTER TABLE "conversations" ADD COLUMN "auto_created" boolean NOT NULL DEFAULT true;
+
+
+--------------- 29 avril --------------
+ALTER TABLE transaction_interne
+DROP CONSTRAINT transaction_interne_id_qrcode_dynamique_fkey;
+
+
+
+
+
+modif pour regler le probleme de suppression des token 
+
+
+hostolink_bd=# ALTER TABLE transaction_interne
+hostolink_bd-# ADD COLUMN qr_code_token VARCHAR(1000),
+hostolink_bd-# ADD COLUMN qr_code_valeur TEXT,
+hostolink_bd-# ADD COLUMN qr_code_short_id VARCHAR(16);
+ALTER TABLE
+hostolink_bd=# ALTER TABLE transaction_interne
+hostolink_bd-# DROP CONSTRAINT transaction_internes_id_qrcode_dynamique_fkey;
+ALTER TABLE
+hostolink_bd=# ALTER TABLE transaction_interne
+hostolink_bd-# DROP CONSTRAINT transaction_internes_id_qrcode_dynamique_fkey;
+ERREUR:  la contrainte « transaction_internes_id_qrcode_dynamique_fkey » de la relation « transaction_interne » n'existe pas
+hostolink_bd=#
+
+
+
+---------------NGUESSAN |  05 Mai 2025 ------------ 
+- Ajour du champs de vérification de modif des données de l'utilisateur afin de l'empêcher de modifier ses données hors mis sn mot_de_passe
+alter table utilisateur add column is_modif_infos boolean default false;
+
+
+
+
+
+
+
+

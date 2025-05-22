@@ -275,36 +275,7 @@ export class UserService {
         if (!user.compte_verifier) {
         user.compte_verifier = true;
         await this.userRepository.save(user);
-        //console.log(`✅ Le compte ${identifier} est maintenant vérifié.`);
-
-
-
-        // ✅ On sécurise avant d'utiliser id_parrain
-  //  if (!user.id_parrain) {
-  //   console.warn("❌ Aucun parrain associé à cet utilisateur.");
-  //   return { success: true, message: "Compte vérifié, pas de parrain." };
-  // }
-
-  // try {
-  //   const compteParrain = await this.compteService.getUserCompte(user.id_parrain);
-
-  //   if (!compteParrain) {
-  //     console.warn("❌ Compte parrain introuvable.");
-  //     return { success: true, message: "Compte vérifié, mais parrain introuvable." };
-  //   }
-
-  //   const montantBonus = 500;
-  //   const nouveauSolde = compteParrain.solde_bonus + montantBonus;
-
-  //   await this.compteService.updateCompteBonus(compteParrain.id_compte, nouveauSolde);
-
-  //   //console.log(`✅ Bonus de ${montantBonus} F crédité au parrain : ${user.id_parrain}`);
-  // } catch (error) {
-  //   console.error("❌ Erreur rewardParrainAfterOtp:", error);
-  //   return { success: true, message: "Compte vérifié, erreur lors du bonus." };
-  // }
-
-         
+        //console.log(`✅ Le compte ${identifier} est maintenant vérifié.`);  
       }
 
     
